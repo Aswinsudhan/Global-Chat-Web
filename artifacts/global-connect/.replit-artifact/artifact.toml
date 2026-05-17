@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Global Connect"
+version = "1.0.0"
+id = "artifacts/global-connect"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18430
+
+[services.development]
+run = "pnpm --filter @workspace/global-connect run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/global-connect", "run", "build" ]
+publicDir = "artifacts/global-connect/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18430"
+BASE_PATH = "/"

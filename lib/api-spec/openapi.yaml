@@ -3,13 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Global Connect API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: rooms
+    description: Chat room operations
+  - name: messages
+    description: Message operations
+  - name: users
+    description: User operations
+  - name: ai
+    description: AI chat operations
 paths:
   /healthz:
     get:
@@ -24,6 +32,164 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /rooms:
+    get:
+      operationId: listRooms
+      tags: [rooms]
+      summary: List all active rooms
+      responses:
+        "200":
+          description: List of rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Room"
+    post:
+      operationId: createRoom
+      tags: [rooms]
+      summary: Create a private room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoomInput"
+      responses:
+        "201":
+          description: Created room
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+
+  /rooms/{id}:
+    get:
+      operationId: getRoom
+      tags: [rooms]
+      summary: Get room details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Room details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "404":
+          description: Room not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteRoom
+      tags: [rooms]
+      summary: Delete a room
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Room deleted
+        "404":
+          description: Not found
+
+  /rooms/{id}/messages:
+    get:
+      operationId: getRoomMessages
+      tags: [messages]
+      summary: Get message history for a room
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Message list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    delete:
+      operationId: clearRoomMessages
+      tags: [messages]
+      summary: Clear all messages in a room
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Messages cleared
+
+  /rooms/{id}/online-users:
+    get:
+      operationId: getRoomOnlineUsers
+      tags: [users]
+      summary: Get online users in a room
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Online users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OnlineUser"
+
+  /ai/chat:
+    post:
+      operationId: aiChat
+      tags: [ai]
+      summary: Send a message to the AI and receive a streaming response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiChatInput"
+      responses:
+        "200":
+          description: SSE stream of AI response chunks
+          content:
+            text/event-stream: {}
+
+  /stats:
+    get:
+      operationId: getStats
+      tags: [rooms]
+      summary: Get global chat stats
+      responses:
+        "200":
+          description: Global stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlobalStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +200,147 @@ components:
       required:
         - status
 
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        isPrivate:
+          type: boolean
+        isGlobal:
+          type: boolean
+        memberCount:
+          type: integer
+        messageCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        lastActivityAt:
+          type: ["string", "null"]
+          format: date-time
+        expiresAt:
+          type: ["string", "null"]
+          format: date-time
+        inactivityDeleteMinutes:
+          type: ["integer", "null"]
+        emptyDeleteMinutes:
+          type: ["integer", "null"]
+        messageRetentionHours:
+          type: ["integer", "null"]
+        inviteCode:
+          type: ["string", "null"]
+      required:
+        - id
+        - name
+        - isPrivate
+        - isGlobal
+        - memberCount
+        - messageCount
+        - createdAt
+
+    RoomInput:
+      type: object
+      properties:
+        name:
+          type: string
+        inactivityDeleteMinutes:
+          type: integer
+        emptyDeleteMinutes:
+          type: integer
+        messageRetentionHours:
+          type: integer
+      required:
+        - name
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        roomId:
+          type: string
+        userId:
+          type: string
+        username:
+          type: string
+        content:
+          type: string
+        isAi:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - roomId
+        - userId
+        - username
+        - content
+        - isAi
+        - createdAt
+
+    OnlineUser:
+      type: object
+      properties:
+        userId:
+          type: string
+        username:
+          type: string
+        isOnline:
+          type: boolean
+        joinedAt:
+          type: string
+          format: date-time
+      required:
+        - userId
+        - username
+        - isOnline
+        - joinedAt
+
+    AiChatInput:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/AiMessage"
+        systemPrompt:
+          type: ["string", "null"]
+      required:
+        - messages
+
+    AiMessage:
+      type: object
+      properties:
+        role:
+          type: string
+        content:
+          type: string
+      required:
+        - role
+        - content
+
+    GlobalStats:
+      type: object
+      properties:
+        totalOnlineUsers:
+          type: integer
+        totalRooms:
+          type: integer
+        totalMessages:
+          type: integer
+      required:
+        - totalOnlineUsers
+        - totalRooms
+        - totalMessages
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
