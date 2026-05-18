@@ -1,6 +1,8 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
+import path from "path";
+import { existsSync } from "fs";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
@@ -30,5 +32,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+
+// In production, serve the built React frontend from the same server
+if (process.env.NODE_ENV === "production") {
+  const frontendDist = path.resolve(__dirname, "../../global-connect/dist/public");
+
+  if (existsSync(frontendDist)) {
+    app.use(express.static(frontendDist));
+
+    // All non-API routes go to index.html (React handles client-side routing)
+    app.get("*", (_req, res) => {
+      res.sendFile(path.join(frontendDist, "index.html"));
+    });
+
+    logger.info({ frontendDist }, "Serving frontend static files");
+  } else {
+    logger.warn({ frontendDist }, "Frontend dist not found — run the build first");
+  }
+}
 
 export default app;
