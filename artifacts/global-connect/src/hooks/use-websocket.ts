@@ -24,14 +24,23 @@ export function useWebSocket(roomId: string, username: string | null) {
       return;
     }
 
-    const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
     const userId = localStorage.getItem("gc_user_id") || (() => {
       const id = Math.random().toString(36).slice(2);
       localStorage.setItem("gc_user_id", id);
       return id;
     })();
 
-    const wsUrl = `${wsProtocol}//${location.host}/ws?username=${encodeURIComponent(username)}&roomId=${encodeURIComponent(roomId)}&userId=${encodeURIComponent(userId)}`;
+    // If a separate backend URL is configured (e.g. Render), derive WS URL from it
+    // Otherwise fall back to same-origin WebSocket
+    const apiUrl = import.meta.env.VITE_API_URL as string | undefined;
+    let wsUrl: string;
+    if (apiUrl) {
+      const wsBase = apiUrl.replace(/^https/, "wss").replace(/^http/, "ws").replace(/\/+$/, "");
+      wsUrl = `${wsBase}/ws?username=${encodeURIComponent(username)}&roomId=${encodeURIComponent(roomId)}&userId=${encodeURIComponent(userId)}`;
+    } else {
+      const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+      wsUrl = `${wsProtocol}//${location.host}/ws?username=${encodeURIComponent(username)}&roomId=${encodeURIComponent(roomId)}&userId=${encodeURIComponent(userId)}`;
+    }
 
     const socket = new WebSocket(wsUrl);
     ws.current = socket;
