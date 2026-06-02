@@ -52,12 +52,7 @@ Required environment variables:
 DATABASE_URL=your_postgres_connection_string
 AI_INTEGRATIONS_OPENAI_BASE_URL=your_openai_base_url
 AI_INTEGRATIONS_OPENAI_API_KEY=your_openai_api_key
-```
-
-## Deployment
-
-- **Frontend** → Vercel  
-- **Backend** → Render  
+``
 
 Set `VITE_API_URL` in Vercel to point at your Render backend URL.
 
