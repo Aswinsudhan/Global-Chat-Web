@@ -69,7 +69,7 @@ TableRow.displayName = "TableRow"
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+>(({ className, ...props }: {className?: string, [key: string]: any}, ref) => (
   <th
     ref={ref}
     className={cn(
@@ -84,7 +84,7 @@ TableHead.displayName = "TableHead"
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+>(({ className, ...props }: {className?: string, [key: string]: any}, ref) => (
   <td
     ref={ref}
     className={cn(

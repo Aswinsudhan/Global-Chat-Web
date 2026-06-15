@@ -18,9 +18,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <aside className="w-64 flex-shrink-0 border-r bg-sidebar flex flex-col">
         <div className="p-4 border-b h-14 flex items-center">
           <h1 className="font-bold text-lg text-sidebar-foreground tracking-tight flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-sidebar-primary flex items-center justify-center">
-              <MessageSquare className="w-3.5 h-3.5 text-sidebar-primary-foreground" />
-            </div>
+            <img src="/favicon.svg" alt="Global Connect Logo" className="w-6 h-6" />
             Global Connect
           </h1>
         </div>

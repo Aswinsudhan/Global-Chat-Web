@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { STORE_USERNAME_KEY } from "@/lib/constants";
 
 export function useUsername() {

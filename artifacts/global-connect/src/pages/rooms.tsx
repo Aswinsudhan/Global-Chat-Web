@@ -4,7 +4,7 @@ import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, MessageSquare, Clock, Plus, Loader2 } from "lucide-react";
+import { Users, MessageSquare, Clock, Plus } from "lucide-react";
 import { CreateRoomModal } from "@/components/create-room-modal";
 import { useState } from "react";
 

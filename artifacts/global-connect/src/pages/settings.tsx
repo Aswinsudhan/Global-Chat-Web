@@ -62,7 +62,7 @@ export default function SettingsPage() {
               <CardContent>
                 <RadioGroup 
                   value={theme} 
-                  onValueChange={(val) => setTheme(val as any)}
+                  onValueChange={(val) => setTheme(val as 'light' | 'dark' | 'system')}
                   className="grid grid-cols-3 gap-4"
                 >
                   <Label
