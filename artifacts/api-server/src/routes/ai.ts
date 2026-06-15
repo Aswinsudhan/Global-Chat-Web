@@ -1,7 +1,6 @@
 import { Router, type IRouter } from "express";
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { AiChatBody } from "@workspace/api-zod";
-import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
@@ -21,8 +20,8 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
 
   try {
     const stream = await openai.chat.completions.create({
-      model: "gpt-5.4",
-      max_completion_tokens: 2048,
+      model: "gpt-4-turbo-2024-04-09",
+      max_tokens: 2048,
       messages: [
         {
           role: "system",

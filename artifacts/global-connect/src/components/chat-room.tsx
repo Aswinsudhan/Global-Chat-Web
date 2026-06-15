@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useGetRoomMessages, useGetRoomOnlineUsers, getGetRoomMessagesQueryKey, getGetRoomOnlineUsersQueryKey } from "@workspace/api-client-react";
-import { Message } from "@workspace/api-client-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Users, Info, Clock, Loader2, Sparkles, X, Bot } from "lucide-react";
+import { Send, Users, Clock, Loader2, Sparkles, Bot } from "lucide-react";
 import { EmojiPicker } from "@/components/emoji-picker";
 import { useUsername } from "@/hooks/use-username";
 import { STORE_WALLPAPER_KEY } from "@/lib/constants";
@@ -20,7 +19,7 @@ interface ChatRoomProps {
 
 export function ChatRoom({ roomId, roomName, isGlobal = false, expiresAt: initialExpiresAt }: ChatRoomProps) {
   const { username } = useUsername();
-  const [wallpaper, setWallpaper] = useState<string | null>(() => localStorage.getItem(STORE_WALLPAPER_KEY));
+  const [wallpaper] = useState<string | null>(() => localStorage.getItem(STORE_WALLPAPER_KEY));
   const [inputVal, setInputVal] = useState("");
   
   const {
